@@ -30,9 +30,9 @@ compile_frontend:
 	find ../gpt_code_ui/webapp/static -mindepth 1 ! -name '.gitignore' -delete && \
 	rsync -av dist/ ../gpt_code_ui/webapp/static
 
-bundle_pypi:
-	rm -rf dist build && \
-	python3 setup.py sdist bdist_wheel
+    bundle_pypi:
+#     rm -rf dist build &&
+	python setup.py sdist bdist_wheel
 
 upload_pypi:
 	twine upload dist/*

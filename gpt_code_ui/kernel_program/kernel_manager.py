@@ -14,10 +14,15 @@ from time import sleep
 from jupyter_client import BlockingKernelClient
 
 from dotenv import load_dotenv
+
 load_dotenv('.env')
 
-import gpt_code_ui.kernel_program.utils as utils
-import gpt_code_ui.kernel_program.config as config
+import sys
+
+sys.path.extend(['.', '..'])
+
+from kernel_program import utils
+from kernel_program import config
 
 # Set up globals
 messaging = None
@@ -56,7 +61,7 @@ def cleanup_spawned_processes():
                         os.kill(pid, signal.CTRL_BREAK_EVENT)
                     else:
                         os.kill(pid, signal.SIGKILL)
-                    
+
                     # After successful kill, cleanup pid file
                     os.remove(fp)
 

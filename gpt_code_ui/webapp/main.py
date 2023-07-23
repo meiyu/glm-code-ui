@@ -13,7 +13,7 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify, send_from_directory, Response
 from dotenv import load_dotenv
 
-from gpt_code_ui.kernel_program.main import APP_PORT as KERNEL_APP_PORT
+from kernel_program.main import APP_PORT as KERNEL_APP_PORT
 
 load_dotenv('.env')
 
@@ -86,51 +86,79 @@ async def get_code(user_prompt, user_openai_key=None, model="gpt-3.5-turbo"):
         If the user has just uploaded a file, focus on the file that was most recently uploaded (and optionally all previously uploaded files)
     
     Teacher mode: if the code modifies or produces a file, at the end of the code block insert a print statement that prints a link to it as HTML string: <a href='/download?file=INSERT_FILENAME_HERE'>Download file</a>. Replace INSERT_FILENAME_HERE with the actual filename."""
-    temperature = 0.7
-    message_array = [
-        {
-            "role": "user",
-            "content": prompt,
-        },
-    ]
+    # temperature = 0.7
+    # message_array = [
+    #     {
+    #         "role": "user",
+    #         "content": prompt,
+    #     },
+    # ]
 
-    final_openai_key = OPENAI_API_KEY
-    if user_openai_key:
-        final_openai_key = user_openai_key
+    data = {
+        "message": prompt,
+        "history": [],
+        "temperature": 0.95,
+        "top_p": 0.7,
+        "max_tokens": 2048
+    }
 
-    if OPENAI_API_TYPE == "openai":
-        data = {
-            "model": model,
-            "messages": message_array,
-            "temperature": temperature,
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {final_openai_key}",
-        }
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
 
-        response = requests.post(
-            f"{OPENAI_BASE_URL}/v1/chat/completions",
-            data=json.dumps(data),
-            headers=headers,
-        )
-    elif OPENAI_API_TYPE == "azure":
-        data = {
-            "messages": message_array,
-            "temperature": temperature,
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "api-key": f"{final_openai_key}",
-        }
+    response = requests.post(
+        "http://localhost:7000/chat/",
+        data=json.dumps(data),
+        headers=headers
+    )
 
-        response = requests.post(
-            f"{OPENAI_BASE_URL}/openai/deployments/{AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version={OPENAI_API_VERSION}",
-            data=json.dumps(data),
-            headers=headers,
-        )
+    # 处理响应结果
+    if response.status_code == 200:
+        result = response.json()
+        # 处理返回的结果
+        # ...
+        print("glm回复:", result)
     else:
-        return "Error: Invalid OPENAI_PROVIDER", 500
+        print("请求出错:", response.status_code, response.text)
+
+    # final_openai_key = OPENAI_API_KEY
+    # if user_openai_key:
+    #     final_openai_key = user_openai_key
+
+    # if OPENAI_API_TYPE == "openai":
+    #     data = {
+    #         "model": model,
+    #         "messages": message_array,
+    #         "temperature": temperature,
+    #     }
+    #     headers = {
+    #         "Content-Type": "application/json",
+    #         "Authorization": f"Bearer {final_openai_key}",
+    #     }
+    #
+    #     response = requests.post(
+    #         f"{OPENAI_BASE_URL}/v1/chat/completions",
+    #         data=json.dumps(data),
+    #         headers=headers,
+    #     )
+    # elif OPENAI_API_TYPE == "azure":
+    #     data = {
+    #         "messages": message_array,
+    #         "temperature": temperature,
+    #     }
+    #     headers = {
+    #         "Content-Type": "application/json",
+    #         "api-key": f"{final_openai_key}",
+    #     }
+    #
+    #     response = requests.post(
+    #         f"{OPENAI_BASE_URL}/openai/deployments/{AZURE_OPENAI_DEPLOYMENT}/chat/completions?api-version={OPENAI_API_VERSION}",
+    #         data=json.dumps(data),
+    #         headers=headers,
+    #     )
+    # else:
+    #     return "Error: Invalid OPENAI_PROVIDER", 500
 
 
     def extract_code(text):
@@ -155,7 +183,8 @@ async def get_code(user_prompt, user_openai_key=None, model="gpt-3.5-turbo"):
     if response.status_code != 200:
         return "Error: " + response.text, 500
 
-    content = response.json()["choices"][0]["message"]["content"]
+    # content = response.json()["choices"][0]["message"]["content"]
+    content = response.json()["response"]
     return extract_code(content), extract_non_code(content), 200
 
 # We know this Flask app is for local use. So we can disable the verbose Werkzeug logger

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="student@127.0.0.1:6000 password" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
+    <serverData>
+      <paths name="intern_zphz">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/student/meiyu/glm-code-ui" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/frontend" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="student@127.0.0.1:6000 password">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/student/meiyu/glm-code-ui" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
