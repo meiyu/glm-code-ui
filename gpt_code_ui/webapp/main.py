@@ -175,7 +175,7 @@ async def get_code(user_prompt, user_openai_key=None, model="gpt-3.5-turbo"):
     }
 
     response = requests.post(
-        "http://localhost:7000/chat/",
+        "http://localhost:10001/chat/",
         data=json.dumps(data),
         headers=headers
     )
